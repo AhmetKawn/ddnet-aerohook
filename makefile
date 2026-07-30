@@ -1,6 +1,6 @@
 CXX ?= g++
 CXXFLAGS ?= -std=c++17 -O2
-LDFLAGS ?= -lglfw -lGL
+PKG_CONFIG ?= pkg-config
 
 SRC = \
 	main.cpp \
@@ -9,13 +9,27 @@ SRC = \
 
 APP = app
 
+GLFW_CFLAGS := $(shell $(PKG_CONFIG) --cflags glfw3 2>/dev/null)
+GLFW_LIBS := $(shell $(PKG_CONFIG) --libs glfw3 2>/dev/null)
+
+ifeq ($(strip $(GLFW_LIBS)),)
+GLFW_LIBS := -lglfw
+endif
+
+GLFW_LIBS += -lGL
+
+CPPFLAGS += $(GLFW_CFLAGS)
+LDLIBS += $(GLFW_LIBS)
+
 all: build
 
 build:
-	$(CXX) $(CXXFLAGS) $(SRC) -o $(APP) $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(SRC) -o $(APP) $(LDFLAGS) $(LDLIBS)
 
 run: build
 	./$(APP)
 
 clean:
 	rm -f $(APP)
+
+.PHONY: all build run clean
