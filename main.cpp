@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <GLFW/glfw3.h>
+#include "core/map.h"
 
 #ifdef __APPLE__
 #include <OpenGL/gl3.h>
