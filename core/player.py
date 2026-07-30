@@ -3,7 +3,7 @@ import pygame
 
 class Player:
     def __init__(self, x, y):
-        self.rect = pygame.Rect(x, y, 30, 30) # 30x30 Hitbox
+        self.rect = pygame.Rect(x, y, 26, 26) # 26x26 Hitbox
         self.vx = 0
         self.vy = 0
         self.gravity = 0.6
@@ -12,7 +12,7 @@ class Player:
         # Kanca (Hook) Sistemleri
         self.hooked = False
         self.hook_pos = None
-        self.max_hook_length = 400 # Maksimum ip uzunluğu
+        self.max_hook_length = 270 # Maksimum ip uzunluğu
         
         self.on_ground = False
 
