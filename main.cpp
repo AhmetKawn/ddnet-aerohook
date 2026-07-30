@@ -2,6 +2,7 @@
 #include <iostream>
 #include <GLFW/glfw3.h>
 #include "core/map.h"
+#include "render/render.h"
 
 #ifdef __APPLE__
 #include <OpenGL/gl3.h>
@@ -10,6 +11,8 @@
 #endif
 
 // OLM ADAM IMPORT KODUNU KONTROL EDIYOR OHA ^
+
+// bismillah
 
 class Window { // sigma classımız
 public:
@@ -21,7 +24,9 @@ public:
 
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // OpenGL sürümünü 3 olarak ayarlıyoruz
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3); // OpenGL sürümünü 3.3 olarak ayarlıyoruz
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // OpenGL profilini core olarak ayarlıyoruz
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE); // Basit 2D çizim için compatibility profili kullanıyoruz çünkü malım
+
+        // say wallahi bro
 
         #ifdef __APPLE__ // OHA COPILOT BENDEN ÖNCE YAZIYOR 
             glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
@@ -39,6 +44,8 @@ public:
         glfwSetFramebufferSizeCallback(m_handle, framebuffer_size_callback); // pencere boyutu değiştiğinde çağrılacak fonksiyonu ayarlıyoruz
         glfwSetKeyCallback(m_handle, key_callback); // klavye olaylarını ayarlıyoruz // bu ne???
 
+        m_width = width;
+        m_height = height;
         glViewport(0, 0, width, height); // pencere boyutunu ayarlıyoruz
     }
 
@@ -54,6 +61,7 @@ public:
             processInput();
             glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
+            m_renderer.drawMap(m_map, m_width, m_height);
             glfwSwapBuffers(m_handle);
             glfwPollEvents();
         }
@@ -61,6 +69,11 @@ public:
 
 private:
     static void framebuffer_size_callback(GLFWwindow* window, int width, int height) { // pencere boyutu değiştiğinde çağrılacak fonksiyonu ayarlıyoruz
+        auto* self = static_cast<Window*>(glfwGetWindowUserPointer(window));
+        if (self) {
+            self->m_width = width;
+            self->m_height = height;
+        }
         glViewport(0, 0, width, height);
     }
 
@@ -77,6 +90,10 @@ private:
     }
 
     GLFWwindow* m_handle{nullptr}; // pencere işaretçisi
+    Map m_map;
+    Renderer m_renderer;
+    int m_width{800};
+    int m_height{600};
 };
 
 int main() { // ana fonksiyon
