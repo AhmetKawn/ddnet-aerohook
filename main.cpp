@@ -40,6 +40,9 @@ public:
         }
 
         glfwMakeContextCurrent(m_handle); // pencereyi aktif hale getiriyoruz // aynen öyle
+        if (!m_renderer.init("assets/osmun.png")) {
+            std::cerr << "Warning: failed to initialize textures, fallback rendering will be used." << std::endl;
+        }
         glfwSetWindowUserPointer(m_handle, this); // pencereyi işaret ediyoruz OHA OLM HALA BİLİYOR HER ŞEYİ
         glfwSetFramebufferSizeCallback(m_handle, framebuffer_size_callback); // pencere boyutu değiştiğinde çağrılacak fonksiyonu ayarlıyoruz
         glfwSetKeyCallback(m_handle, key_callback); // klavye olaylarını ayarlıyoruz // bu ne???

@@ -11,6 +11,7 @@ class Map {
         static constexpr char WALL = 'W';
         static constexpr char AIR = '.'; 
         static constexpr char SDA = 'F'; // SDA sigma dondurucu alan anlamına geliyor
+        static constexpr char SPAWN = 'S'; // spawn noktası
 
         Map()
         {
@@ -25,7 +26,7 @@ class Map {
                 "W..................W",
                 "W..................W",
                 "W..................W",
-                "W..................W",
+                "W.S................W",
                 "WWWWWWWWWWWWWWWWWWWW"
             }};
         }
