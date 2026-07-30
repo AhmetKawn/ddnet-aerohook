@@ -7,5 +7,15 @@ SRC = \
 	core/map.cpp \
 	render/render.cpp
 
-all:
-	$(CXX) $(CXXFLAGS) $(SRC) -o app $(LDFLAGS)
+APP = app
+
+all: build
+
+build:
+	$(CXX) $(CXXFLAGS) $(SRC) -o $(APP) $(LDFLAGS)
+
+run: build
+	./$(APP)
+
+clean:
+	rm -f $(APP)
