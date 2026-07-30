@@ -12,7 +12,7 @@ class Player:
         # Kanca (Hook) Sistemleri
         self.hooked = False
         self.hook_pos = None
-        self.max_hook_length = 270 # Maksimum ip uzunluğu
+        self.max_hook_length = 300 # Maksimum ip uzunluğu
         
         self.on_ground = False
 
