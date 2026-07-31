@@ -110,14 +110,11 @@ void Renderer::computeLayout(int width, int height, float& tileSize, float& offs
     offsetY = (height - tileSize * Map::HEIGHT) / 2.0f;
 }
 
-void Renderer::drawMap(const Map& map, int width, int height)
+void Renderer::drawMap(const Map& map, int screenWidth, int screenHeight, float tileSize, float offsetX, float offsetY)
 {
-    float tileSize, offsetX, offsetY;
-    computeLayout(width, height, tileSize, offsetX, offsetY);
-
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(0.0, static_cast<GLdouble>(width), static_cast<GLdouble>(height), 0.0, -1.0, 1.0);
+    glOrtho(0.0, static_cast<GLdouble>(screenWidth), static_cast<GLdouble>(screenHeight), 0.0, -1.0, 1.0);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 

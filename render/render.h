@@ -11,7 +11,7 @@ public:
     bool init(const char* spawnTexturePath);
     void cleanup();
 
-    void drawMap(const Map& map, int width, int height);
+    void drawMap(const Map& map, int screenWidth, int screenHeight, float tileSize, float offsetX, float offsetY);
     void drawPlayer(const Player& player, float tileSize, float offsetX, float offsetY);
 
     static void computeLayout(int width, int height, float& tileSize, float& offsetX, float& offsetY);
