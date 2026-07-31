@@ -116,12 +116,18 @@ void Renderer::drawMap(const Map& map, int width, int height)
 
     for (int y = 0; y < Map::HEIGHT; y++) {
         for (int x = 0; x < Map::WIDTH; x++) {
-            drawTile(x, y, map.getTile(x, y), tileSize, offsetX, offsetY);
+            drawTileBase(x, y, map.getTile(x, y), tileSize, offsetX, offsetY);
+        }
+    }
+
+    for (int y = 0; y < Map::HEIGHT; y++) {
+        for (int x = 0; x < Map::WIDTH; x++) {
+            drawTileOverlay(x, y, map.getTile(x, y), tileSize, offsetX, offsetY);
         }
     }
 }
 
-void Renderer::drawTile(int x, int y, char tile, float tileSize, float offsetX, float offsetY)
+void Renderer::drawTileBase(int x, int y, char tile, float tileSize, float offsetX, float offsetY)
 {
     const float px = offsetX + x * tileSize;
     const float py = offsetY + y * tileSize;
@@ -147,10 +153,16 @@ void Renderer::drawTile(int x, int y, char tile, float tileSize, float offsetX, 
     glVertex2f(px + tileSize, py + tileSize);
     glVertex2f(px, py + tileSize);
     glEnd();
+}
+
+void Renderer::drawTileOverlay(int x, int y, char tile, float tileSize, float offsetX, float offsetY)
+{
+    const float px = offsetX + x * tileSize;
+    const float py = offsetY + y * tileSize;
 
     // boyutu falan burada ayarlıyoruz onu anladım da bu bloğu ben yazmadım btw
     if (tile == Map::SPAWN && m_spawnTexture != 0) {
-        float scale = 1.7f; // BUNU BEN YAZDIM HAHAHAHA HİÇ KOMİK DEĞİL
+        float scale = 1.8f; // BUNU BEN YAZDIM HAHAHAHA HİÇ KOMİK DEĞİL
         float size = tileSize * scale;
         float delta = (size - tileSize) * 0.5f;
         drawTexturedTile(px - delta, py - delta, size, m_spawnTexture,
