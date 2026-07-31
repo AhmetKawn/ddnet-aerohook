@@ -19,7 +19,8 @@ private:
                      float* u0 = nullptr, float* v0 = nullptr,
                      float* u1 = nullptr, float* v1 = nullptr,
                      int* cropWidth = nullptr, int* cropHeight = nullptr);
-    void drawTile(int x, int y, char tile, float tileSize, float offsetX, float offsetY);
+    void drawTileBase(int x, int y, char tile, float tileSize, float offsetX, float offsetY);
+    void drawTileOverlay(int x, int y, char tile, float tileSize, float offsetX, float offsetY);
     void drawTexturedTile(float px, float py, float size, unsigned int texture,
                           float u0 = 0.0f, float v0 = 0.0f, float u1 = 1.0f, float v1 = 1.0f,
                           bool flipV = false);
