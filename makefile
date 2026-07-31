@@ -4,7 +4,8 @@ PKG_CONFIG ?= pkg-config
 
 SRC = \
 	main.cpp \
-	core/map.cpp \
+	core/player.cpp \
+	engine/engine.cpp \
 	render/render.cpp
 
 APP = app
