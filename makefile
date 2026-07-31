@@ -5,6 +5,7 @@ PKG_CONFIG ?= pkg-config
 SRC = \
 	main.cpp \
 	core/player.cpp \
+	core/camera.cpp \
 	engine/engine.cpp \
 	render/render.cpp
 
