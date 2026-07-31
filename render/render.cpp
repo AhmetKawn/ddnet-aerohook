@@ -126,15 +126,7 @@ void Renderer::drawTile(int x, int y, char tile, float tileSize, float offsetX, 
     const float px = offsetX + x * tileSize;
     const float py = offsetY + y * tileSize;
 
-    if (tile == Map::SPAWN && m_spawnTexture != 0) {
-        float scale = 1.35f;
-        float size = tileSize * scale;
-        float delta = (size - tileSize) * 0.5f;
-        drawTexturedTile(px - delta, py - delta, size, m_spawnTexture,
-                         0.0f, 0.0f, 1.0f, 1.0f, false);
-        return;
-    }
-
+    // osmantuş ölse dahi gururun adına çizim yap
     switch (tile) {
         case Map::WALL:
             glColor3f(0.35f, 0.35f, 0.35f);
@@ -142,6 +134,7 @@ void Renderer::drawTile(int x, int y, char tile, float tileSize, float offsetX, 
         case Map::SDA:
             glColor3f(0.95f, 0.25f, 0.25f);
             break;
+        case Map::SPAWN:
         case Map::AIR:
         default:
             glColor3f(0.10f, 0.10f, 0.10f);
@@ -154,6 +147,15 @@ void Renderer::drawTile(int x, int y, char tile, float tileSize, float offsetX, 
     glVertex2f(px + tileSize, py + tileSize);
     glVertex2f(px, py + tileSize);
     glEnd();
+
+    // boyutu falan burada ayarlıyoruz onu anladım da bu bloğu ben yazmadım btw
+    if (tile == Map::SPAWN && m_spawnTexture != 0) {
+        float scale = 1.7f; // BUNU BEN YAZDIM HAHAHAHA HİÇ KOMİK DEĞİL
+        float size = tileSize * scale;
+        float delta = (size - tileSize) * 0.5f;
+        drawTexturedTile(px - delta, py - delta, size, m_spawnTexture,
+                         0.0f, 0.0f, 1.0f, 1.0f, false);
+    }
 }
 
 void Renderer::drawTexturedTile(float px, float py, float size, unsigned int texture,
