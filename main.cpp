@@ -3,6 +3,7 @@
 #include <iostream>
 #include <GLFW/glfw3.h>
 #include "core/map.h"
+#include "core/camera.h"
 #include "engine/engine.h"
 #include "render/render.h"
 
@@ -54,6 +55,8 @@ public:
         m_width = width;
         m_height = height;
         glViewport(0, 0, width, height); // pencere boyutunu ayarlıyoruz
+
+        m_camera.snapTo(m_engine.player().position());
     }
 
     ~Window() { // pencereyi temizliyoruz
@@ -74,14 +77,16 @@ public:
 
             processInput();
             m_engine.update(deltaTime);
+            m_camera.update(m_engine.player().position(), deltaTime);
 
             glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
 
-            m_renderer.drawMap(m_map, m_width, m_height);
+            float offsetX, offsetY;
+            m_camera.computeOffset(m_width, m_height, offsetX, offsetY);
+            const float tileSize = Camera::tileSize();
 
-            float tileSize, offsetX, offsetY;
-            Renderer::computeLayout(m_width, m_height, tileSize, offsetX, offsetY);
+            m_renderer.drawMap(m_map, m_width, m_height, tileSize, offsetX, offsetY);
             m_renderer.drawPlayer(m_engine.player(), tileSize, offsetX, offsetY);
 
             glfwSwapBuffers(m_handle);
@@ -124,8 +129,9 @@ private:
         double mouseX, mouseY;
         glfwGetCursorPos(m_handle, &mouseX, &mouseY);
 
-        float tileSize, offsetX, offsetY;
-        Renderer::computeLayout(m_width, m_height, tileSize, offsetX, offsetY);
+        float offsetX, offsetY;
+        m_camera.computeOffset(m_width, m_height, offsetX, offsetY);
+        const float tileSize = Camera::tileSize();
 
         const Vec2 playerPos = m_engine.player().position();
         const float playerScreenX = offsetX + playerPos.x * tileSize;
@@ -140,6 +146,7 @@ private:
     Map m_map;
     Engine m_engine;
     Renderer m_renderer;
+    Camera m_camera;
     int m_width{800};
     int m_height{600};
 };
