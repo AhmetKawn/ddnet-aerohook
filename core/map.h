@@ -8,7 +8,6 @@ public:
     static constexpr int WIDTH = 60;
     static constexpr int HEIGHT = 30;
 
-    // Harita Blok Tipleri
     static constexpr char WALL = 'W';        // Katı duvar / Zemin
     static constexpr char AIR = '.';         // Boşluk / Hava
     static constexpr char SDA = 'F';         // Sigma Dondurucu Alan
@@ -20,7 +19,6 @@ public:
 
     Map()
     {
-        // 60x30 boyutunda, her satırı tam 60 karakterlik devasa DDNet parkuru
         m_tiles = {{
             "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
             "W..........................................................W",
@@ -55,7 +53,6 @@ public:
         }};
     }
 
-    // Güvenli blok okuma fonksiyonu (Harita dışına çıkmayı engeller)
     char getTile(int x, int y) const 
     {
         if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT) {
@@ -64,7 +61,6 @@ public:
         return m_tiles[y][x];
     }
 
-    // Pratik kontrol fonksiyonları
     bool isSolid(int x, int y) const {
         char t = getTile(x, y);
         return t == WALL;
@@ -75,7 +71,6 @@ public:
         return t == SPIKE || t == SDA;
     }
 
-    // Spawn noktasını otomatik bulmak için yardımcı
     std::pair<int, int> getSpawnPosition() const {
         for (int y = 0; y < HEIGHT; ++y) {
             for (int x = 0; x < WIDTH; ++x) {
@@ -84,7 +79,7 @@ public:
                 }
             }
         }
-        return {2, 6}; // Varsayılan yedek konum
+        return {2, 6}; 
     }
 
 private:

@@ -1,32 +1,32 @@
-#ifndef GAME_CLIENT_COMPONENTS_CAMERA_H
-#define GAME_CLIENT_COMPONENTS_CAMERA_H
+#pragma once
 
-#include <base/vmath.h>
-#include <game/client/component.h>
+#include "player.h" // Vec2
 
-class CCamera : public CComponent
-{
+class Camera {
 public:
-    // Kameranın mevcut ve bir önceki frame'deki merkez koordinatları
-    // (Oyun motorunda pürüzsüz kamera hareketi ve enterpolasyon için gereklidir yalarım oyunumuz nası canlarım.)
-    vec2 m_Center;
-    vec2 m_PrevCenter;
+    // Ekranda 1 tile kaç piksel görünsün. Harita artık ekrana sığdırılmıyor,
+    // bunun yerine sabit bir zoom kullanılıyor (karakter küçük kalmasın diye).
+    static constexpr float TILE_PIXEL_SIZE = 48.0f;
 
-    // Zoom değişkenleri
-    float m_Zoom;
-    float m_ZoomTarget;
+    // Kameranın hedefe her frame ne kadar yaklaşacağını belirler (0-1 arası).
+    // Küçük değer = daha "elastik"/gecikmeli takip, büyük değer = daha sert kilitlenme.
+    static constexpr float SMOOTHING = 0.15f;
 
-    CCamera();
+    Camera();
 
-    // CComponent sınıfından override edilen temel döngü fonksiyonlayıııı
-    virtual void OnInit() override;
-    virtual void OnConsoleInit() override;
-    virtual void OnRender() override;
-    virtual void OnStateChange(int NewState, int OldState) override;
+    // Kamerayı doğrudan bir noktaya ışınlar (spawn anında yumuşak kaymayı önlemek için).
+    void snapTo(Vec2 worldPos);
 
-    // Kameranın hedefini ve zoom seviyesini dışarıdan değiştirmek için yardımcı fonksiyonlar fonkisyonlayyyy
-    void ChangeZoom(float Target);
-    void SetCenter(vec2 Center);
+    // Kamerayı hedefe doğru yumuşakça hareket ettirir. dt gerçek (render) süredir.
+    void update(Vec2 targetPos, float dt);
+
+    // Verilen ekran boyutuna göre world(tile) -> screen(pixel) dönüşümü için offset üretir.
+    void computeOffset(int screenWidth, int screenHeight, float& offsetX, float& offsetY) const;
+
+    Vec2 center() const { return m_center; }
+    static float tileSize() { return TILE_PIXEL_SIZE; }
+
+private:
+    Vec2 m_center;
+    Vec2 m_prevCenter; // ileride render-interpolasyonu için hazır tutuluyor
 };
-
-#endif // GAME_CLIENT_COMPONENTS_CAMERA_H
