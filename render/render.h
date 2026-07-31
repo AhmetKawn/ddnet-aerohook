@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../core/map.h"
+#include "../core/player.h"
 
 class Renderer
 {
@@ -12,6 +12,9 @@ public:
     void cleanup();
 
     void drawMap(const Map& map, int width, int height);
+    void drawPlayer(const Player& player, float tileSize, float offsetX, float offsetY);
+
+    static void computeLayout(int width, int height, float& tileSize, float& offsetX, float& offsetY);
 
 private:
     bool loadTexture(const char* texturePath, unsigned int &texture, int &width, int &height,

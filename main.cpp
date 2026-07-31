@@ -1,7 +1,9 @@
+#include <algorithm>
 #include <cstdlib>
 #include <iostream>
 #include <GLFW/glfw3.h>
 #include "core/map.h"
+#include "engine/engine.h"
 #include "render/render.h"
 
 #ifdef __APPLE__
@@ -16,7 +18,9 @@
 
 class Window { // sigma classımız
 public:
-    Window(int width, int height, const char* title) { // pencereyi tanımlıyoruz
+    Window(int width, int height, const char* title) // pencereyi tanımlıyoruz
+        : m_engine(m_map)
+    {
         if (!glfwInit()) { // eğer glfw hatası yaşanırsa
             std::cerr << "glfw ossurdu" << std::endl; // ossurma mesajı
             exit(EXIT_FAILURE); //  uygulamayı kapatıyoruz
@@ -60,11 +64,26 @@ public:
     }
 
     void run() { // pencere döngüsünü başlatıyoruz
+        double lastTime = glfwGetTime();
+
         while (!glfwWindowShouldClose(m_handle)) {
+            const double currentTime = glfwGetTime();
+            float deltaTime = static_cast<float>(currentTime - lastTime);
+            lastTime = currentTime;
+            deltaTime = std::min(deltaTime, 0.1f); // donma/sekme sonrası fiziğin dev adım atmasını önler
+
             processInput();
+            m_engine.update(deltaTime);
+
             glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
+
             m_renderer.drawMap(m_map, m_width, m_height);
+
+            float tileSize, offsetX, offsetY;
+            Renderer::computeLayout(m_width, m_height, tileSize, offsetX, offsetY);
+            m_renderer.drawPlayer(m_engine.player(), tileSize, offsetX, offsetY);
+
             glfwSwapBuffers(m_handle);
             glfwPollEvents();
         }
@@ -90,10 +109,36 @@ private:
         if (glfwGetKey(m_handle, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
             glfwSetWindowShouldClose(m_handle, true);
         }
+
+        const bool left = glfwGetKey(m_handle, GLFW_KEY_A) == GLFW_PRESS ||
+                          glfwGetKey(m_handle, GLFW_KEY_LEFT) == GLFW_PRESS;
+        const bool right = glfwGetKey(m_handle, GLFW_KEY_D) == GLFW_PRESS ||
+                           glfwGetKey(m_handle, GLFW_KEY_RIGHT) == GLFW_PRESS;
+        const bool jump = glfwGetKey(m_handle, GLFW_KEY_SPACE) == GLFW_PRESS ||
+                          glfwGetKey(m_handle, GLFW_KEY_W) == GLFW_PRESS ||
+                          glfwGetKey(m_handle, GLFW_KEY_UP) == GLFW_PRESS;
+        const bool hook = glfwGetMouseButton(m_handle, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+
+        m_engine.setKeyState(left, right, jump, hook);
+
+        double mouseX, mouseY;
+        glfwGetCursorPos(m_handle, &mouseX, &mouseY);
+
+        float tileSize, offsetX, offsetY;
+        Renderer::computeLayout(m_width, m_height, tileSize, offsetX, offsetY);
+
+        const Vec2 playerPos = m_engine.player().position();
+        const float playerScreenX = offsetX + playerPos.x * tileSize;
+        const float playerScreenY = offsetY + playerPos.y * tileSize;
+
+        const Vec2 aimDir(static_cast<float>(mouseX) - playerScreenX,
+                          static_cast<float>(mouseY) - playerScreenY);
+        m_engine.setAimDirection(aimDir);
     }
 
     GLFWwindow* m_handle{nullptr}; // pencere işaretçisi
     Map m_map;
+    Engine m_engine;
     Renderer m_renderer;
     int m_width{800};
     int m_height{600};
@@ -108,4 +153,4 @@ int main() { // ana fonksiyon
 // OFFF OPENGL NEDEN BU KADAR ZOR ??
 
 
-// kodun yarısı erdamn, yarısı copilot tarafından yazıldı kanıt var. 
+// kodun yarısı erdamn, yarısı copilot tarafından yazıldı kanıt var.

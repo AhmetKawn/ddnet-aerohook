@@ -3,6 +3,7 @@
 #include "render.h"
 
 #include <algorithm>
+#include <cmath>
 #include <iostream>
 
 #ifdef __APPLE__
@@ -101,12 +102,18 @@ void Renderer::cleanup()
     }
 }
 
+void Renderer::computeLayout(int width, int height, float& tileSize, float& offsetX, float& offsetY)
+{
+    tileSize = std::min(static_cast<float>(width) / Map::WIDTH,
+                        static_cast<float>(height) / Map::HEIGHT);
+    offsetX = (width - tileSize * Map::WIDTH) / 2.0f;
+    offsetY = (height - tileSize * Map::HEIGHT) / 2.0f;
+}
+
 void Renderer::drawMap(const Map& map, int width, int height)
 {
-    const float tileSize = std::min(static_cast<float>(width) / Map::WIDTH,
-                                    static_cast<float>(height) / Map::HEIGHT);
-    const float offsetX = (width - tileSize * Map::WIDTH) / 2.0f;
-    const float offsetY = (height - tileSize * Map::HEIGHT) / 2.0f;
+    float tileSize, offsetX, offsetY;
+    computeLayout(width, height, tileSize, offsetX, offsetY);
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -157,17 +164,12 @@ void Renderer::drawTileBase(int x, int y, char tile, float tileSize, float offse
 
 void Renderer::drawTileOverlay(int x, int y, char tile, float tileSize, float offsetX, float offsetY)
 {
-    const float px = offsetX + x * tileSize;
-    const float py = offsetY + y * tileSize;
-
-    // boyutu falan burada ayarlıyoruz onu anladım da bu bloğu ben yazmadım btw
-    if (tile == Map::SPAWN && m_spawnTexture != 0) {
-        float scale = 1.8f; // BUNU BEN YAZDIM HAHAHAHA HİÇ KOMİK DEĞİL
-        float size = tileSize * scale;
-        float delta = (size - tileSize) * 0.5f;
-        drawTexturedTile(px - delta, py - delta, size, m_spawnTexture,
-                         0.0f, 0.0f, 1.0f, 1.0f, false);
-    }
+    (void)x;
+    (void)y;
+    (void)tile;
+    (void)tileSize;
+    (void)offsetX;
+    (void)offsetY;
 }
 
 void Renderer::drawTexturedTile(float px, float py, float size, unsigned int texture,
@@ -179,7 +181,6 @@ void Renderer::drawTexturedTile(float px, float py, float size, unsigned int tex
 
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, texture);
-    glColor3f(1.0f, 1.0f, 1.0f);
 
     glBegin(GL_QUADS);
     glTexCoord2f(u0, topV);
@@ -194,4 +195,47 @@ void Renderer::drawTexturedTile(float px, float py, float size, unsigned int tex
 
     glBindTexture(GL_TEXTURE_2D, 0);
     glDisable(GL_TEXTURE_2D);
+}
+
+void Renderer::drawPlayer(const Player& player, float tileSize, float offsetX, float offsetY)
+{
+    Vec2 pos = player.position();
+    const float cx = offsetX + pos.x * tileSize;
+    const float cy = offsetY + pos.y * tileSize;
+    const float visualScale = 2.0f; 
+    const float size = Player::RADIUS * 2.0f * tileSize * visualScale;
+
+    if (player.hookState() != HookState::Idle) {
+        Vec2 hookPos = player.hookPosition();
+        const float hx = offsetX + hookPos.x * tileSize;
+        const float hy = offsetY + hookPos.y * tileSize;
+
+        glColor3f(0.85f, 0.85f, 0.2f);
+        glBegin(GL_LINES);
+        glVertex2f(cx, cy);
+        glVertex2f(hx, hy);
+        glEnd();
+
+        if (player.hookState() == HookState::Attached) {
+            glColor3f(1.0f, 0.9f, 0.2f);
+            glBegin(GL_QUADS);
+            glVertex2f(hx - 3.0f, hy - 3.0f);
+            glVertex2f(hx + 3.0f, hy - 3.0f);
+            glVertex2f(hx + 3.0f, hy + 3.0f);
+            glVertex2f(hx - 3.0f, hy + 3.0f);
+            glEnd();
+        }
+    }
+
+    if (m_spawnTexture != 0) {
+        // karakter osmun.png ile çiziliyor
+        if (player.isFrozen()) {
+            glColor3f(0.6f, 0.85f, 1.0f);
+        } else {
+            glColor3f(1.0f, 1.0f, 1.0f);
+        }
+
+        drawTexturedTile(cx - size * 0.5f, cy - size * 0.5f, size, m_spawnTexture,
+                         0.0f, 0.0f, 1.0f, 1.0f, false);
+    }
 }
